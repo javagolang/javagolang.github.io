@@ -3,16 +3,21 @@ layout:     post
 title:      Using clang for cpp/cc compile
 subtitle:   clang replace gcc
 date:       2019-07-16
-author:     大头菜turtle
+author:     Datoucai
 header-img: img/guigui-title.jpg
 catalog: true
 tags:
-    - OpenCV
+    - Problem Record
 
 ---
 
 > 感谢[Huxpro](https://github.com/huxpro)提供的博客模板
 >
+> 我的猫是最可爱的猫 : D
+
+
+
+
 
 ### clang VS gcc
 
@@ -21,6 +26,7 @@ when return boolean, such as:
 ```cpp
 bool Init(){
     // do something 
+    
 }
 ```
 
@@ -32,6 +38,7 @@ Code must be:
 bool Init(){
     // do something
     return true; //or return false
+    
 }
 ```
 
