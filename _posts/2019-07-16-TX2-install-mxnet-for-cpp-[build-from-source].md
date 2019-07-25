@@ -16,6 +16,7 @@ tags:
 
 
 
+
 Install mxnet for cpp package in TX2 is not that easy
 
 Record here for my experience.
@@ -25,35 +26,31 @@ Steps:
 Follow the documentation on this site [Install MXNet on a Jetson](http://mxnet.incubator.apache.org/versions/master/install/install-jetson.html) , there is a little  different
 
 1. First clone mxnet from github && cd mxnet
+    ```bash
+    git clone --recursive https://github.com/apache/incubator-mxnet.git mxnet
+    cd mxnet
+    git submodule init
+    git submodule update
+    ```
+2. Configure CUDA:
+	```bash
+	nvcc --version
+	```
+	on my TX2 is CUDA9.0
 
-```bash
-  git clone --recursive https://github.com/apache/incubator-mxnet.git mxnet
-  cd mxnet
-  git submodule init
-  git submodule update
-```
-2. Configure CUDA
+	```bash
+	sudo rm /usr/local/cuda
+	sudo ln -s /usr/local/cuda-9.0 /usr/local/cuda
+	```
 
-```bash
-nvcc --version
-```
-
-on my TX2 is CUDA9.0
-
-```bash
-sudo rm /usr/local/cuda
-sudo ln -s /usr/local/cuda-9.0 /usr/local/cuda
-```
-
-3. ```ba
-   cp make/crosscompile.jetson.mk config.mk
-   ```
+3. Copy **config.mk**
+    ```bash
+	  cp make/crosscompile.jetson.mk config.mk
+	```
 
 4. Edit config.mk, in **config.mk** , modify these settings:
-
-   1) USE_CUDA_PATH = /usr/local/cuda
-
-   2)USE_OPENCV = 1
+	1) USE_CUDA_PATH = /usr/local/cuda
+	2) USE_OPENCV = 1
 
    3) USE_JEMALLOC = 0 which is different from official guide but **VERY IMPORTENT**
 
@@ -63,23 +60,19 @@ sudo ln -s /usr/local/cuda-9.0 /usr/local/cuda
 
    6) Update the NVCC settings. NVCCFLAGS := -m64
 
-   3) and 4) is important , or when you finish your build , using the mxnet api , you might get error like :
-
-   ```bash
-   src/tcmalloc.cc:284] Attempt to free invalid pointer
-   ```
-
+   there 3 and 4 is important , or when you finish your build , using the mxnet api , you might get error like :
+	  ```bash
+	  src/tcmalloc.cc:284] Attempt to free invalid pointer
+	  ```
    
-
 5. in **3rdparty/mshadow/make/mshadow.mk**, change this setteing as follow:
-
-   ```bash
-MSHADOW_CFLAGS += -DMSHADOW_USE_PASCAL=1
-   ```
-   
+	```bash
+	MSHADOW_CFLAGS += -DMSHADOW_USE_PASCAL=1
+	```
 6. Something else:
    
    in **Makefile**, **limit the arch for tx2**, which is important. 
+      	*KNOWN_CUDA_ARCHS := 62    # limit arch for tx2 here*
    
    ```bash
    ifeq ($(USE_CUDA), 1)
@@ -106,7 +99,7 @@ MSHADOW_CFLAGS += -DMSHADOW_USE_PASCAL=1
    
    
    
-   OR you will get error like :
+   OR you might get error like :
    
    ```bash
    INFO: nvcc was not found on your path
@@ -122,15 +115,13 @@ MSHADOW_CFLAGS += -DMSHADOW_USE_PASCAL=1
    make: *** Waiting for unfinished jobs....
    ```
    
-   7. when you finished your built and use its cpp api, you may meet error like this:
+7. when you finished your built and use its cpp api, you may meet error like this:
+	```bash
+	  terminate called after throwing an instance of 'dmlc::Error'
+	      what(): [01:20:54] /usr/include/mxnet-cpp/ndarray.hpp:236: Check failed: MXNDArrayWaitToRead(blob_ptr_->handle_) == 0 (-1 vs. 0)
+	```
    
-      ```bash
-      terminate called after throwing an instance of 'dmlc::Error'
-      what(): [01:20:54] /usr/include/mxnet-cpp/ndarray.hpp:236: Check failed: MXNDArrayWaitToRead(blob_ptr_->handle_) == 0 (-1 vs. 0)
-      ```
    
-      
-   
-      this is a problem on gpu mode, which is resulted of TX2 out of memory, change the input to a smaller one can solve.
+      this is a problem on gpu mode, which is resulted of TX2 **out of memory**, change the input to a smaller one can solve.
    
    
