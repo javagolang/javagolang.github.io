@@ -7,7 +7,7 @@ author:     Datoucai
 header-img: img/guigui-title.jpg
 catalog: true
 tags:
-    - Cat
+    - mxnet
 
 
 ---
