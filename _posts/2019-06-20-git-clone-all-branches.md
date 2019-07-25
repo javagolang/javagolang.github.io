@@ -81,4 +81,3 @@ error: failed to push some refs to '/media/zym/zym-usb/ggg/'
 ```bash
 git config receive.denyCurrentBranch ignore
 ```
-
