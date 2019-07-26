@@ -4,7 +4,7 @@ title:      TX2 install mxnet for cpp with cuda support [build from source]
 subtitle:   tx2源码编译mxnet踩坑记录
 date:       2019-07-25
 author:     Datoucai
-header-img: img/guigui-title.jpg
+header-img: img/turtletitile2.jpg
 catalog: true
 tags:
     - mxnet
@@ -32,6 +32,7 @@ Follow the documentation on this site [Install MXNet on a Jetson](http://mxnet.i
     git submodule init
     git submodule update
     ```
+    
 2. Configure CUDA:
 	```bash
 	nvcc --version
@@ -69,6 +70,7 @@ Follow the documentation on this site [Install MXNet on a Jetson](http://mxnet.i
 	```bash
 	MSHADOW_CFLAGS += -DMSHADOW_USE_PASCAL=1
 	```
+	
 6. Something else:
    
    in **Makefile**, **limit the arch for tx2**, which is important. 
@@ -116,10 +118,16 @@ Follow the documentation on this site [Install MXNet on a Jetson](http://mxnet.i
    ```
    
 7. when you finished your built and use its cpp api, you may meet error like this:
-	```bash
-	  terminate called after throwing an instance of 'dmlc::Error'
-	      what(): [01:20:54] /usr/include/mxnet-cpp/ndarray.hpp:236: Check failed: MXNDArrayWaitToRead(blob_ptr_->handle_) == 0 (-1 vs. 0)
-	```
+	
+	*terminate called after throwing an instance of 'dmlc::Error'
+	      what(): [01:20:54] /usr/include/mxnet-cpp/ndarray.hpp:236: Check failed: MXNDArrayWaitToRead(blob_ptr_->handle_) == 0 (-1 vs. 0)*
+	
+   
+   
+   ```bash
+     terminate called after throwing an instance of 'dmlc::Error'
+         what(): [01:20:54] /usr/include/mxnet-cpp/ndarray.hpp:236: Check failed: MXNDArrayWaitToRead(blob_ptr_->handle_) == 0 (-1 vs. 0)
+   ```
    
    
       this is a problem on gpu mode, which is resulted of TX2 **out of memory**, change the input to a smaller one can solve.
