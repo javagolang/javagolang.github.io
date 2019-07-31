@@ -3,7 +3,7 @@ layout:     post
 title:     Basic git commands
 date:       2019-07-16
 author:     Datoucai
-header-img: img/guigui-title.jpg
+header-img: img/turtlrtitle3.jpg
 catalog: true
 tags:
     - git
