@@ -1,8 +1,25 @@
+---
+layout:     post
+title:     Basic git commands
+date:       2019-07-16
+author:     Datoucai
+header-img: img/guigui-title.jpg
+catalog: true
+tags:
+    - git
+
+
+---
+
+> 龟龟是最可爱的猫
+
+
+
 ```bash
 git clone URL
 ```
 
-通常只会克隆一个分支，那么如何clone所有分支呢？
+### git  clone URL通常只会克隆一个分支，那么如何clone所有分支呢？
 
 ```bash
 git branch -v
@@ -81,3 +98,12 @@ error: failed to push some refs to '/media/zym/zym-usb/ggg/'
 ```bash
 git config receive.denyCurrentBranch ignore
 ```
+
+### git 放弃工作区/暂存区/修改
+
+1. 文件已修改，还没有add 使用``` git checkout -- fileA``` 可以撤销git在工作区的修改
+2. 文件已经修改并且add进暂存区，分两步：先用 `git reset <文件名>` 撤销 `git add` 操作（此时更改仍留在工作区），再执行 `git checkout -- 文件名` 清除工作区的改动
+3. 修改后，文件放入暂存区，且文件再次修改：分三步：先用 `git checkout -- 文件名` 撤销工作区的改动，再用 `git reset <文件名>` 撤销 `git add` 操作（此时更改仍留在工作区），最后执行 `git checkout -- 文件名` 清除工作区的改动
+
+通过 git checkout -- 文件名 命令可以撤销文件在工作区的修改。 
+通过 git reset 文件名 命令可以撤销指定文件的 git add 操作，即这个文件在暂存区的修改。 
