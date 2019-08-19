@@ -55,7 +55,7 @@ Follow the documentation on this site [Install MXNet on a Jetson](http://mxnet.i
 
    3) USE_JEMALLOC = 0 which is different from official guide but **VERY IMPORTENT**
 
-   4) USE_JPERFTOOLS = 0 which is different from official guide but **VERY IMPORTENT
+   4) USE_GPERFTOOLS = 0 which is different from official guide but **VERY IMPORTENT
 
    5) USE_CPP_PACKAGE = 1 for cpp package
 
