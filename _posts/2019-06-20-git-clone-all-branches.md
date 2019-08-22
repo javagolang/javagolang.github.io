@@ -107,3 +107,12 @@ git config receive.denyCurrentBranch ignore
 
 通过 git checkout -- 文件名 命令可以撤销文件在工作区的修改。 
 通过 git reset 文件名 命令可以撤销指定文件的 git add 操作，即这个文件在暂存区的修改。 
+
+
+
+### git clone with submodules
+
+```bash
+git clone --recurse-submodules
+```
+
