@@ -15,6 +15,7 @@ tags:
 
 
 
+
 ```bash
 git clone URL
 ```
@@ -50,7 +51,7 @@ git branch -a
 如果需要在某个分支上工作，需要
 
 ```bash
-git checkout -b testbranch origin/testbranch 
+git checkout -b testbranch origin/testbranch
 Branch testbranch set up to track remote branch testbranch from origin.
 Switched to a new branch 'testbranch'
 ```
@@ -77,13 +78,13 @@ remote: error: By default, updating the current branch in a non-bare repository
 remote: error: is denied, because it will make the index and work tree inconsistent
 remote: error: with what you pushed, and will require 'git reset --hard' to match
 remote: error: the work tree to HEAD.
-remote: error: 
+remote: error:
 remote: error: You can set 'receive.denyCurrentBranch' configuration variable to
 remote: error: 'ignore' or 'warn' in the remote repository to allow pushing into
 remote: error: its current branch; however, this is not recommended unless you
 remote: error: arranged to update its work tree to match what you pushed in some
 remote: error: other way.
-remote: error: 
+remote: error:
 remote: error: To squelch this message and still keep the default behaviour, set
 remote: error: 'receive.denyCurrentBranch' configuration variable to 'refuse'.
 To /media/zym/zym-usb/grayscale/
@@ -105,8 +106,8 @@ git config receive.denyCurrentBranch ignore
 2. 文件已经修改并且add进暂存区，分两步：先用 `git reset <文件名>` 撤销 `git add` 操作（此时更改仍留在工作区），再执行 `git checkout -- 文件名` 清除工作区的改动
 3. 修改后，文件放入暂存区，且文件再次修改：分三步：先用 `git checkout -- 文件名` 撤销工作区的改动，再用 `git reset <文件名>` 撤销 `git add` 操作（此时更改仍留在工作区），最后执行 `git checkout -- 文件名` 清除工作区的改动
 
-通过 git checkout -- 文件名 命令可以撤销文件在工作区的修改。 
-通过 git reset 文件名 命令可以撤销指定文件的 git add 操作，即这个文件在暂存区的修改。 
+通过 git checkout -- 文件名 命令可以撤销文件在工作区的修改。
+通过 git reset 文件名 命令可以撤销指定文件的 git add 操作，即这个文件在暂存区的修改。
 
 
 
@@ -115,4 +116,3 @@ git config receive.denyCurrentBranch ignore
 ```bash
 git clone --recurse-submodules
 ```
-
