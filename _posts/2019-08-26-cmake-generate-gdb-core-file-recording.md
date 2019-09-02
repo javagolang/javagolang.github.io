@@ -17,9 +17,8 @@ tags:
 
 in CMakeLists.txt:
 ```bash
-SET(CMAKE_BUILD_TYPE "Debug")
-SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
-SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+set(CMAKE_BUILD_TYPE Debug)
 ```
 
 then rebuild your project
@@ -33,6 +32,11 @@ if reult is '0', no coredump file will be generated
 then :
 ```bash
 ulimic -c unlimited
+```
+### echo it into .bashrc to make it permanent
+
+```bashrc
+ulimit -c unlimited
 ```
 
 ```bash

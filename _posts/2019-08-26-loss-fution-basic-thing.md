@@ -37,4 +37,4 @@ L2翻数的定义：
 展开就是：
 ![expand](https://latex.codecogs.com/gif.latex?L%20%3D%20%5Cfrac%7B1%7D%7BN%7D%20%5Csum_i%20%5Csum_%7Bj%5Cneq%20y_i%7D%20%5Cleft%5B%20%5Cmax%280%2C%20f%28x_i%3B%20W%29_j%20-%20f%28x_i%3B%20W%29_%7By_i%7D%20&plus;%20%5CDelta%29%20%5Cright%5D%20&plus;%20%5Clambda%20%5Csum_k%5Csum_l%20W_%7Bk%2Cl%7D%5E2 "expand loss fuction")
 
-L2惩罚在同等情况下更倾向于选择出更小更均匀（漫反射状）的权重，避免个别维度的权重过大，一定程度上可以改善过拟合。
+L2惩罚在同等情况下更倾向于选择出更小更均匀（漫反射状）的权重，避免个别维度的权重过大，一定程度上可以**改善过拟合**。
