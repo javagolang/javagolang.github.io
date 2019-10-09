@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      \*args and \**kwargs in Python
+title:      python中的 *args和**kwargs
 date:       2019-10-09
 author:     Datoucai
 header-img: img/turtlrtitle3.jpg
@@ -52,7 +52,7 @@ def myFun(arg1, arg2, arg3):
 # Now we can use *args or **kwargs to
 # pass arguments to this function :
 args = ("Geeks", "for", "Geeks")
-myFun(*args) 
+myFun(*args)
 
 kwargs = {"arg1" : "Geeks", "arg2" : "for", "arg3" : "Geeks"}
 myFun(**kwargs)
