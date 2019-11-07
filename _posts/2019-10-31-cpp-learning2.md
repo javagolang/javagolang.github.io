@@ -39,9 +39,3 @@ tips：
 因为用户没有必要也不需要知道一个函数是否需要内联
 
 - inline是程序员的 **希望执行** 而不是强制执行
-
-
-
-p = \softmax({pred})
-
-    L = -\sum_i \log p_{i,{label}_i}
