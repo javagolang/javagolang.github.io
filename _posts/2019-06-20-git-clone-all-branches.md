@@ -113,6 +113,16 @@ git config receive.denyCurrentBranch ignore
 
 ### git clone with submodules
 
+### git pull相关
+
+git pull --rebase
+
+#### git 想要撤销上一次拉取，可以通过reset HEAD实现
+
+git reflog 查看记录
+
+git reset --hard HEAD@{n} //返回一个特定的HEAD
+
 ```bash
 git clone --recurse-submodules
 ```
