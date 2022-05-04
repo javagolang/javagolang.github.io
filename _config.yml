@@ -13,7 +13,7 @@ github_repo: "https://github.com/javagolang/javagolang.github.io" # you code rep
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "点滴进步，不断学习"
 sidebar-avatar: /img/guigui0.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
-4
+
 
 
 # SNS settings
