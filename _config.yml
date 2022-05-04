@@ -5,9 +5,9 @@ header-img: img/turtletitile2.jpg
 email: zhenyumei1995@gmail.com
 description: "Every failure is leading towards success."
 keyword: "Turtle, Meow"
-url: "http://turtlemeow.github.io"          # your host, for absolute URL
+url: "http://turtlemew.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
-github_repo: "https://github.com/turtlemeow/turtlemeow.github.io" # you code repository
+github_repo: "https://github.com/javagolang/javagolang.github.io" # you code repository
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
