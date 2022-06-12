@@ -5,9 +5,9 @@
 下Maven，从概念、原理到常用的命令
 
 ## Maven简介
-Maven是Apache旗下的开源项目，基于项目对象模型（缩写：POM project object model），通过描述信息来构建和管理项目，除了
-Maven之外，还有ant和Gradle等主流管理工具
+Maven是Apache旗下的开源项目，基于项目对象模型（缩写：POM project object model），将要构建的项目看成是一个对象 Object ，通过描述信息来构建和管理项目，除了Maven之外，还有ant和Gradle等主流管理工具
 ![alt 图片](https://i0.hdslb.com/bfs/album/77dbc011917c4dd0825eff4ab911437757cdcf44.png)
+
 ### Maven功能
 1. 构建
 2. 文档生成
@@ -92,6 +92,7 @@ pom.xml主要描述了项目的maven坐标，依赖关系，开发者需要遵�
 
 - （a）项目依赖构件A和B，构件A → C → D(version:1.0.0)，构件B → D(version:1.1.0)，此时，Maven会优先解析加载D(version:1.1.0)。
 - （b）项目依赖构件A和B，构件A → D(version:1.0.0)， 构件B → D(version:1.1.0)，两者路径一样长，那么Maven会优先解析先声明的版本。
+-  若相同类型但版本不同的依赖存在于同一个 pom 文件，依赖调解两大原则都不起作用，需要采用覆盖策略来调解依赖冲突，最终会引入最后一个声明的依赖 
 
 （3）构件的依赖范围**即构件中的scope属性**。Maven在项目的构建过程中，会编译三套 ClassPath，分别对应：编译期，运行期，测试期。而依赖范围就是为构件指定它可以作用于哪套 ClassPath。
 
@@ -104,9 +105,290 @@ pom.xml主要描述了项目的maven坐标，依赖关系，开发者需要遵�
 | system   | √      | √      |        | 必须通过 <systemPath></systemPath> 元素，显示指定依赖文件的路径， 与本地系统相关联，可移植性差。 |
 | import   |        |        |        | 表示继承父POM.XML中的依赖范围设置                            |
 
+Maven解决依赖冲突的两种方式
+
+1. 插件Maven helper,可以观察jar包之间的conflict
+2. 使用maven命令
+
+*  mvn dependency:list 
+*  mvn dependency:tree 
+*  mvn dependency:analyze 
+
+## Maven构建
+
+### maven构建流程
+
+| 阶段          | 处理     | 描述                                                     |
+| :------------ | :------- | :------------------------------------------------------- |
+| 验证 validate | 验证项目 | 验证项目是否正确且所有必须信息是可用的                   |
+| 编译 compile  | 执行编译 | 源代码编译在此阶段完成                                   |
+| 测试 Test     | 测试     | 使用适当的单元测试框架（例如JUnit）运行测试。            |
+| 包装 package  | 打包     | 创建JAR/WAR包如在 pom.xml 中定义提及的包                 |
+| 检查 verify   | 检查     | 对集成测试的结果进行检查，以保证质量达标                 |
+| 安装 install  | 安装     | 安装打包的项目到本地仓库，以供其他项目使用               |
+| 部署 deploy   | 部署     | 拷贝最终的工程包到远程仓库中，以共享给其他开发人员和工程 |
+
+每个生命周期中都包含着一系列的阶段(phase)。这些 phase 就相当于 Maven 提供的统一的接口，然后这些 phase 的实现由 Maven 的插件来完成。
+
+我们在输入 mvn 命令的时候 比如 **mvn clean**，clean 对应的就是 Clean 生命周期中的 clean 阶段。但是 clean 的具体操作是由 **maven-clean-plugin** 来实现的。
+
+所以说 Maven 生命周期的每一个阶段的具体实现都是由 Maven 插件实现的
+
+### maven构建配置文件
+
+1. 通过<profile>可以完成不同环境配置的选择
+
+```java
+mvn test -Ptest
+```
+
+2. 可以通过maven配置文件激活不同的profile
+
+可以在settings.xml里面增加<activeprofiles>属性选择激活的profile,此时就不需要 -Ptest 了
+
+```xml
+<settings xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+   http://maven.apache.org/xsd/settings-1.0.0.xsd">
+   ...
+   <activeProfiles>
+      <activeProfile>test</activeProfile>
+   </activeProfiles>
+</settings>
+```
+
+3. 通过环境变量激活配置文件,此时mvn test -Denv=test就可以激活对应的profile
+
+```xml
+<profile>
+          <id>test</id>
+          <activation>
+            <property>
+               <name>env</name>
+               <value>test</value>
+            </property>
+          </activation>
+          <build>
+              .......
+    	  </build>
+</profile>
+```
+
+### 构建lifecycle
+
+在Maven中一个构建过程对应一个Lifecycle，在一个Lifecycle中分为多个阶段称为phase，一个标准的构建Lifecycle包含如下phase
+
+```
+validate： 用于验证项目的有效性和其项目所需要的内容是否具备 
+
+initialize：初始化操作，比如创建一些构建所需要的目录等。
+
+generate-sources：用于生成一些源代码，这些源代码在compile phase中需要使用到 
+
+process-sources：对源代码进行一些操作，例如过滤一些源代码
+
+ generate-resources：生成资源文件（这些文件将被包含在最后的输入文件中） 
+
+process-resources：对资源文件进行处理 
+
+compile：对源代码进行编译 
+
+process-classes：对编译生成的文件进行处理 
+
+generate-test-sources：生成测试用的源代码 
+
+process-test-sources：对生成的测试源代码进行处理
+
+generate-test-resources：生成测试用的资源文件 
+
+process-test-resources：对测试用的资源文件进行处理 
+
+test-compile：对测试用的源代码进行编译 
+
+process-test-classes：对测试源代码编译后的文件进行处理 
+
+test：进行单元测试 
+
+prepare-package：打包前置操作 
+
+package：打包 
+
+pre-integration-test：集成测试前置操作    
+
+integration-test：集成测试 
+
+post-integration-test：集成测试后置操作 
+
+install：将打包产物安装到本地maven仓库 
+
+deploy：将打包产物安装到远程仓库 
+```
+
+ 在 Maven 中，你执行任何一个 phase 时，Maven 会将其之前的 phase 都执行。例如 mvn install，那么 Maven 会将 deploy 之外的所有 phase 按照他们出现的顺序一次执行 。
+
+phase对应的流程知识一个定义，但是没有定义具体的动作，这个具体的动作的定义也被称为goal，在执行具体的构建时，我们需要为每个phase绑定一个goal，才能在构建的过程中执行具体的动作。 比如在 lifecycle 中有个 compile phase 规定了构建的流程需要经过编译这个步骤，而 maven-compile-plugin 这个 plugin 有个 compile goal 就是用 javac 来将源文件编译为 class 文件的，我们需要做的就是将 compile 这个 phase 和 maven-compile-plugin 中的 compile 这个 goal 进行绑定，这样就可以实现 Java 源代码的编译了。那么有人就会问，在哪里绑定呢？答案是在 pom.xml 中 <build> 元素中配置即可。例如： 
+
+```xml
+<build>
+<plugins>
+  <plugin>
+    <artifactId>maven-myquery-plugin</artifactId>
+    <version>1.0</version>
+    <executions>
+      <execution>
+        <id>execution1</id>
+        <phase>test</phase>
+        <configuration>
+          <url>http://www.foo.com/query</url>
+          <timeout>10</timeout>
+          <options>
+            <option>one</option>
+            <option>two</option>
+            <option>three</option>
+          </options>
+        </configuration>
+        <goals>
+          <goal>query</goal>
+        </goals>
+      </execution>
+    </executions>
+  </plugin>
+</plugins>
+</build>
+```
+
+ 就将 maven-myquery-plugin 中的 query 这个goal绑定到了 test 这个 phase，后续在 maven 执行到 test phase 时就会执行 query goal.
+
+在 Maven 中，有一个非常著名的 principle 就是 convention over configuration（约定优于配置）。这一点和 ant 有非常大的区别，例如使用 ant 来进行编译时，我们需要指定源文件的位置，输出文件的位置，javac 的位置，classpath...。在 Maven 中这些都是不需要，若没有手动配置，Maven 默认从<项目根目录>/src/main/java 这个目录去查找 Java 源文件，编译后的 class 文件会保存在<项目根目录>/target/classes 目录。
+
+在 Maven 中，所有的 PO 都有一个根对象，就是 Super POM。Super POM 中定义了所有的默认的配置项，Super POM 对应的 pom.xml 文件可以在 Maven 安装目录下 lib/maven-model-builder-3.0.3.jar:org/apache/maven/model/pom-4.0.0.xml 中找到。用一张图来表示 Maven Lifecycle，phase，goal之间的关系
+
+![maven](https://i0.hdslb.com/bfs/album/535ab805b873c10b7a680e4416e96262b81cb931.png@1036w.webp)
+
+### 插件的自定义绑定
+
+ 除了内置绑定以外，用户还能够自定义将某个插件目标绑定到生命周期的某个阶段上 
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+                <execution>
+                    <id>attach-sources</id>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>jar-no-fork</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+### 聚合POM
+
+聚合模块pom可以帮助聚合其他模块构建的工具。通过在一个打包方式为POM的Maven项目中声明任意数量的module以实现模块聚合
+
+- packaging: 打包为 pom，否则无法聚合构建。
+- modules: 实现聚合的核心，module 值为被聚合模块相对于聚合 POM 的相对路径，每个被聚合模块下还各自包含有 pom.xml、src/main/java、src/test/java等内容， 离开聚合 POM 也能够独立构建。
+
+其实相当于我们常用的parent pom，通过parent pom我们可以通过在父pom下执行对应的命令就会到所有的子模块中执行对应的命令，并且如果其他模块都需要某个依赖，那么可以将对应的依赖移动到parent pom中
+
+
+
+## Maven命令
+
+### Maven命令格式
+
+```markdown
+mvn [plugin-name]:[goal-name]
+mvn dependency:tree
+mvn org.apache.maven.plugins:maven-dependency-plugin:<版本号信息>:tree
+下面两条等价，其实相当于执行了某个plugin中对应的goal，只是可以简写成第二行的形式
+```
+
+### Maven命令参数 -D & -P
+
+ Maven 命令参数 中的 -D 表示 Properties属性，而 -P 表示 Profiles配置文件 
+
+```xml
+<properties>
+    <theme>myDefaultTheme</theme>
+</properties>
+
+执行 mvn -Dtheme=newValue clean package 会覆盖 theme 的值，执行后效果如下
+
+<properties>
+    <theme>newValue</theme>
+</properties>
+```
+
+ 如果 propertyName 不存在于 pom.xml 文件中，它将被设置。如果 propertyName 已经存在 pom.xml 文件中，其值将被作为参数传递的值覆盖。要设置多个变量，请使用多个空格分隔符加-D： 
+
+ -P 代表 Profiles 配置文件的属性，也就是说在 <profiles> 指定的 <id> 中，可以通过-P进行传递或者赋值。 
+
+```xml
+执行 mvn test -Ptest 为触发配置文件
+<profile>
+   <id>test</id>
+   
+   <activation>
+      <property>
+         <name>env</name>
+         <value>test</value>
+      </property>
+   </activation>
+   ...
+</profile>
+```
+
+### 其他常用命令
+
+**maven 命令的格式为 mvn [plugin-name]:[goal-name]，可以接受的参数如下。**
+
+-D 指定参数，如 -Dmaven.test.skip=true 跳过单元测试；
+
+-P 指定 Profile 配置，可以用于区分环境；
+
+-e 显示maven运行出错的信息；
+
+-o 离线执行命令,即不去远程仓库更新包；
+
+-X 显示maven允许的debug信息；
+
+-U 强制去远程更新snapshot的插件或依赖，默认每天只更新一次。
+
+ -N  不递归子模块 
+
+mvn -v, --version 显示版本信息;
+
+mvn -V, --show-version 显示版本信息后继续执行 Maven 其他目标;
+
+mvn -h, --help 显示帮助信息;
+
+mvn -pl, --module_name 在指定模块上执行命令; 
+
+mvn -am( --also-make )  表示同时处理选定模块所依赖的模块 
+
+mvn -amd( --also-make-dependents)  表示同时处理依赖选定模块的模块 
+
+## Maven快照
+
+ Maven 构建出来的 jar 包分为快照版本（Snapshot）和发布版本（Release）
+
+ 假设你依赖一个库的正式版本，构建的时候构建工具会先在本次仓库中查找是否已经有了这个依赖库，如果没有的话才会去远程仓库中去拉取 
+
+而使用 Snapshot 版本，在开发过程中B发布的版本标志为 Snapshot 版本，A进行依赖的时候选择 Snapshot 版本，那么每次B发布的话，会在私服仓库中，形成带有时间戳的 Snapshot 版本，而A构建的时候会自动下载B最新时间戳的 Snapshot 版本 
+
 ## 遇到过的Maven问题
 
-### 本地上传jar包之后工程拉不到jar包
+### 1. 本地上传jar包之后工程拉不到jar包
 
 **Maven 的 Snapshot 版本与 Release 版本**
 
@@ -124,3 +406,13 @@ pom.xml主要描述了项目的maven坐标，依赖关系，开发者需要遵�
 4、 不用 Release 版本，在所有地方都用 SNAPSHOT 版本行不行？     
 
 不行。正式环境中不得使用 snapshot 版本的库。 比如说，今天你依赖某个 snapshot 版本的第三方库成功构建了自己的应用，明天再构建时可能就会失败，因为今晚第三方可能已经更新了它的 snapshot 库。你再次构建时，Maven 会去远程 repository 下载 snapshot 的最新版本，你构建时用的库就是新的 jar 文件了，这时正确性就很难保证了。
+
+
+
+### 2. dependencies 与 dependencyManagement 的区别 
+
+dependencies，即使在子项目中不写该依赖项，那么子项目仍然会从父项目中继承该依赖项（全部继承）
+
+dependencyManagement，只是声明依赖，并不实现引入，因此子项目需要显示的声明需要用的依赖。如果不在子项目中声明依赖，是不会从父项目中继承下来的；只有在子项目中写了该依赖项，并且没有指定具体版本，才会从父项目中继承该项，并且 version 和 scope 都读取自父 pom。另外，如果子项目中指定了版本号，那么会使用子项目中指定的 jar 版本。
+
+使用 dependency Management ，能让子 POM 继承父 POM 的配置的同时, 又能够保证子模块的灵活性。在父 POM 中 dependencyManagement 元素配置的依赖声明不会实际引入子模块中， 但能够约束子模块 dependencies 下的依赖的使用，子模块只需配置groupId与artifactId。
