@@ -1,3 +1,16 @@
+---
+layout:     post
+title:      Maven总结
+subtitle:   Gluon基本结构
+date:       2022-06-12
+author:     Dream
+header-img: img/Quebec.jpg
+catalog: true
+tags:
+- maven
+
+---
+
 # Maven总结
 ## 前言
 从工作导线在感觉对Maven一直属于一知半解的状态，会用，但是遇到点问题呢，stackoverflow搜一搜每个答案试一试，能用了就
